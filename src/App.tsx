@@ -24,7 +24,8 @@ const createUserFormSchema = z.object({
     }),
   email: z.string()
     .min(1, { message: 'Email is necessary' })
-    .email({ message: 'Invalid email address' }),
+    .email({ message: 'Invalid email address' })
+    .endsWith('@github.com', { message: 'Must be a valid GitHub email' }),
   password: z.string()
     .min(6, { message: 'Must be 6 or more characters long' }),
 })
