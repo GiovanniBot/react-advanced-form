@@ -16,7 +16,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 const createUserFormSchema = z.object({
   name: z.string()
-    .min(1, { message: 'Name is necessary' }),
+    .min(1, { message: 'Name is necessary' })
+    .transform(name => {
+      return name.trim().split(' ').map(word => {
+        return word[0].toLocaleUpperCase().concat(word.substring(1))
+      }).join(' ')
+    }),
   email: z.string()
     .min(1, { message: 'Email is necessary' })
     .email({ message: 'Invalid email address' }),
