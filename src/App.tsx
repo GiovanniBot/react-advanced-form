@@ -2,7 +2,7 @@
   
   [X] Validação / transformação
   [X] Field Arrays
-  [ ] Upload de arquivos
+  [X] Upload de arquivos
   [ ] Composition Pattern
 
 */
@@ -14,8 +14,12 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { X } from 'lucide-react'
+import supabase from './lib/supabase'
 
 const createUserFormSchema = z.object({
+  avatar: z.instanceof(FileList)
+    .transform(list => list.item(0)!)
+    .refine(file => file.size <= 5 * 1024 * 1024, { message: 'Archive size up to 5mb' }),
   name: z.string()
     .min(1, { message: 'Name is necessary' })
     .transform(name => {
@@ -62,13 +66,28 @@ function App() {
   }
 
   // High-order function like .map() reduce() find(). Passing a function to another function.
-  function createUser(data: CreateUserFormData) {
+  async function createUser(data: CreateUserFormData) {
+    await supabase.storage.from('react-advanced-form').upload(
+      data.avatar.name, 
+      data.avatar
+    )
+
     setOutput(JSON.stringify(data, null, 2))
   }
 
   return (
     <main className='h-screen py-10 bg-zinc-950 flex flex-col gap-10 items-center justify-center text-zinc-300 '>
       <form onSubmit={handleSubmit(createUser)} className="flex flex-col gap-4 w-full max-w-xs">
+        <div className='flex flex-col gap-1'>
+          <label htmlFor="avatar">Avatar</label>
+          <input 
+            type="file"
+            accept='image/*'
+            {...register('avatar')}
+          />
+          {errors.avatar && <span className='text-red-600 text-sm'>{errors.avatar.message}</span>}
+        </div>
+       
        <div className='flex flex-col gap-1'>
           <label htmlFor="name">Name</label>
           <input 
