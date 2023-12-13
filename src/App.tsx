@@ -1,6 +1,6 @@
 /* TODO:
   
-  [ ] Validação / transformação
+  [X] Validação / transformação
   [ ] Field Arrays
   [ ] Upload de arquivos
   [ ] Composition Pattern
